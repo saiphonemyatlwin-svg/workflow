@@ -413,6 +413,10 @@
   .to-top.show { opacity: 1; pointer-events: auto; transform: none; }
   .to-top:hover { transform: translateY(-2px); }
 
+  /* When GSAP drives the animations, CSS entrance animations step aside */
+  .gsap-on .hero .eyebrow, .gsap-on .hero h1, .gsap-on .hero .hero-sub,
+  .gsap-on .hero .hero-ctas, .gsap-on .hero .mock, .gsap-on .hero-badge, .gsap-on .hero-proof { animation: none; }
+
   @media (prefers-reduced-motion: reduce) {
     .reveal, .hero .eyebrow, .hero h1, .hero .hero-sub, .hero .hero-ctas, .hero .mock, .hero-badge, .hero-proof { animation: none; transition: none; opacity: 1; transform: none; }
     .flow-svg, .chip-float { display: none; }
@@ -850,17 +854,105 @@
 
 <button class="to-top" id="toTop" aria-label="Back to top">↑</button>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
 (() => {
-  /* ── Scroll reveal with per-group stagger ── */
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.reveal').forEach(el => {
-    const siblings = el.parentElement ? [...el.parentElement.children].filter(c => c.classList.contains('reveal')) : [el];
-    el.style.setProperty('--stagger', (siblings.indexOf(el) * 0.08) + 's');
-    io.observe(el);
-  });
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const useGsap = !!(window.gsap && window.ScrollTrigger) && !reducedMotion;
+
+  if (useGsap) {
+    gsap.registerPlugin(ScrollTrigger);
+    document.documentElement.classList.add('gsap-on');
+    // GSAP owns the reveals: neutralize the CSS transition path
+    document.querySelectorAll('.reveal').forEach(el => { el.classList.add('in'); el.style.transition = 'none'; });
+
+    /* ── Hero entrance timeline ── */
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out', duration: 0.8 } });
+    tl.from('.hero-badge', { y: 26, opacity: 0, duration: 0.55 })
+      .from('.hero .eyebrow', { y: 18, opacity: 0, duration: 0.5 }, '-=0.3')
+      .from('.hero h1', { y: 40, opacity: 0, duration: 0.9 }, '-=0.35')
+      .from('.hero-sub', { y: 24, opacity: 0, duration: 0.6 }, '-=0.55')
+      .from('.hero-ctas', { y: 18, opacity: 0, duration: 0.5 }, '-=0.4')
+      .from('.hero-proof', { opacity: 0, duration: 0.5 }, '-=0.3')
+      .from('.mock', { x: 70, opacity: 0, rotation: 1.6, duration: 1, ease: 'power4.out' }, 0.3)
+      .from('.tile', { scale: 0.7, opacity: 0, stagger: 0.08, duration: 0.5, ease: 'back.out(1.7)' }, '-=0.6')
+      .from('.mock-row', { x: 26, opacity: 0, stagger: 0.07, duration: 0.45 }, '-=0.35')
+      .from('.mock-hint', { opacity: 0, duration: 0.4 }, '-=0.2');
+
+    /* ── Hero parallax: board drifts as you scroll away ── */
+    gsap.to('.hero-visual', {
+      y: -46, ease: 'none',
+      scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 0.6 }
+    });
+
+    /* ── Section headlines & standfirsts ── */
+    gsap.utils.toArray('section h2').forEach(h => {
+      gsap.from(h, {
+        y: 34, opacity: 0, duration: 0.85, ease: 'power3.out',
+        scrollTrigger: { trigger: h, start: 'top 86%', once: true }
+      });
+    });
+    gsap.utils.toArray('section .section-sub').forEach(p => {
+      gsap.from(p, {
+        y: 22, opacity: 0, duration: 0.7, delay: 0.12, ease: 'power3.out',
+        scrollTrigger: { trigger: p, start: 'top 88%', once: true }
+      });
+    });
+
+    /* ── Card reveals, batched & staggered ── */
+    gsap.set('.reveal', { opacity: 0, y: 30 });
+    ScrollTrigger.batch('.reveal', {
+      start: 'top 86%', once: true,
+      onEnter: batch => gsap.to(batch, { opacity: 1, y: 0, duration: 0.75, stagger: 0.09, ease: 'power3.out', overwrite: true })
+    });
+
+    /* ── Cascade: the line draws itself, dots pop ── */
+    gsap.utils.toArray('.casc-line').forEach(line => {
+      gsap.from(line, {
+        scaleY: 0, transformOrigin: 'top center', duration: 0.9, ease: 'power2.inOut',
+        scrollTrigger: { trigger: line.parentElement, start: 'top 78%', once: true }
+      });
+    });
+    gsap.utils.toArray('.casc-dot').forEach(dot => {
+      gsap.from(dot, {
+        scale: 0, duration: 0.5, ease: 'back.out(2.5)',
+        scrollTrigger: { trigger: dot, start: 'top 82%', once: true }
+      });
+    });
+
+    /* ── Meeting card: agenda cascades in, IDS chips pop ── */
+    gsap.from('.agenda', {
+      x: -24, opacity: 0, stagger: 0.09, duration: 0.5, ease: 'power2.out',
+      scrollTrigger: { trigger: '.meet-card', start: 'top 75%', once: true }
+    });
+    gsap.from('.ids-chip', {
+      scale: 0.5, opacity: 0, stagger: 0.12, duration: 0.5, ease: 'back.out(2)',
+      scrollTrigger: { trigger: '.meet-card', start: 'top 60%', once: true }
+    });
+
+    /* ── Vocabulary rows ── */
+    gsap.from('.vocab-row', {
+      opacity: 0, y: 16, stagger: 0.06, duration: 0.45, ease: 'power2.out',
+      scrollTrigger: { trigger: '.vocab-table', start: 'top 82%', once: true }
+    });
+
+    /* ── Closing CTA ── */
+    gsap.from('.cta-band .wrap', {
+      scale: 0.94, opacity: 0, duration: 0.9, ease: 'power3.out',
+      scrollTrigger: { trigger: '.cta-band', start: 'top 82%', once: true }
+    });
+  } else {
+    /* ── Fallback: IntersectionObserver reveal (no GSAP / reduced motion) ── */
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => {
+      const siblings = el.parentElement ? [...el.parentElement.children].filter(c => c.classList.contains('reveal')) : [el];
+      el.style.setProperty('--stagger', (siblings.indexOf(el) * 0.08) + 's');
+      io.observe(el);
+    });
+  }
 
   /* ── Scroll progress bar + back-to-top ── */
   const progress = document.getElementById('progress');
