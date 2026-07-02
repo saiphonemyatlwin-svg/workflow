@@ -942,6 +942,16 @@
       scale: 0.94, opacity: 0, duration: 0.9, ease: 'power3.out',
       scrollTrigger: { trigger: '.cta-band', start: 'top 82%', once: true }
     });
+
+    /* ── Failsafe: never leave in-view content invisible ── */
+    const rescue = () => {
+      document.querySelectorAll('.reveal').forEach(el => {
+        if (getComputedStyle(el).opacity !== '0') return;
+        const r = el.getBoundingClientRect();
+        if (r.top < innerHeight && r.bottom > 0) gsap.set(el, { opacity: 1, y: 0, overwrite: true });
+      });
+    };
+    setInterval(rescue, 4000);
   } else {
     /* ── Fallback: IntersectionObserver reveal (no GSAP / reduced motion) ── */
     const io = new IntersectionObserver((entries) => {
