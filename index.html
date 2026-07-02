@@ -166,9 +166,35 @@
   .hero-proof {
     margin-top: 18px; font-family: 'JetBrains Mono', monospace;
     font-size: 10.5px; font-weight: 600; letter-spacing: 1.6px; text-transform: uppercase;
-    color: var(--ink-faint);
+    color: var(--ink-faint); min-height: 18px;
     animation: riseIn .7s cubic-bezier(.22,.8,.3,1) both .5s;
+    transition: opacity .35s ease;
   }
+
+  /* ── Motion: information flowing into the board ── */
+  .hero-visual { position: relative; }
+  .flow-svg {
+    position: absolute; top: 40px; left: -150px; width: 150px; height: 80%;
+    overflow: visible; pointer-events: none; z-index: 0;
+  }
+  .flow-svg path { fill: none; stroke: #cddfa8; stroke-width: 1.5; stroke-dasharray: 3 7; opacity: .8; }
+  .chip-float {
+    position: absolute; z-index: 2; display: flex; align-items: center; gap: 7px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+    padding: 8px 14px; white-space: nowrap;
+    font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; letter-spacing: .6px;
+    color: var(--ink-mid); box-shadow: 0 10px 26px rgba(30,35,20,0.12);
+    opacity: 0; animation: chipFloat 10.5s ease-in-out infinite;
+  }
+  .chip-float .cf-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  @keyframes chipFloat {
+    0%   { opacity: 0; transform: translateY(20px); }
+    6%   { opacity: 1; transform: translateY(0); }
+    26%  { opacity: 1; transform: translateY(-4px); }
+    33%  { opacity: 0; transform: translateY(-20px); }
+    100% { opacity: 0; transform: translateY(-20px); }
+  }
+  @media (max-width: 1100px) { .flow-svg, .chip-float { display: none; } }
 
   /* Hero app mock */
   .mock {
@@ -389,6 +415,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .reveal, .hero .eyebrow, .hero h1, .hero .hero-sub, .hero .hero-ctas, .hero .mock, .hero-badge, .hero-proof { animation: none; transition: none; opacity: 1; transform: none; }
+    .flow-svg, .chip-float { display: none; }
     html { scroll-behavior: auto; }
   }
 
@@ -451,17 +478,30 @@
       <div class="mono eyebrow">Company Operating System</div>
       <h1>Run the whole company from <em>one place</em>.</h1>
       <p class="hero-sub">
-        You're not short on effort — your business is short on structure to turn that effort into results.
+        You didn't start a company to spend your days reminding, checking and chasing.
         WorkFlow connects <strong>Scorecards, Rocks, Issues, Projects, My Work</strong> and the
-        <strong>WorkFlow Syncs Meeting</strong> into one workspace — so accountability lives in the
-        structure, not in the owner's head.
+        <strong>WorkFlow Syncs Meeting</strong> into one workspace — information flows up, clarity flows
+        down, and accountability finally lives in the structure, not in your head.
       </p>
       <div class="hero-ctas">
         <a class="btn" href="https://app.workflowmm.net" target="_blank" rel="noopener">Open WorkFlow →</a>
         <a class="btn ghost" href="#why">Why we built it</a>
       </div>
-      <p class="hero-proof">Stop firefighting. Stop chasing follow-ups. Grow by design, not by default.</p>
+      <p class="hero-proof" id="heroRotate">Stop firefighting. Stop chasing follow-ups. Grow by design, not by default.</p>
     </div>
+
+    <div class="hero-visual">
+      <svg class="flow-svg" viewBox="0 0 150 460" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0,70 C70,70 85,120 150,130"/>
+        <path d="M0,230 C70,230 85,225 150,220"/>
+        <path d="M0,395 C75,395 90,320 150,300"/>
+        <circle r="4" fill="#34d399"><animateMotion dur="3.6s" repeatCount="indefinite" path="M0,70 C70,70 85,120 150,130"/></circle>
+        <circle r="3.5" fill="#b5e848"><animateMotion dur="4.4s" begin="0.9s" repeatCount="indefinite" path="M0,230 C70,230 85,225 150,220"/></circle>
+        <circle r="4" fill="#fbbf24"><animateMotion dur="5s" begin="1.7s" repeatCount="indefinite" path="M0,395 C75,395 90,320 150,300"/></circle>
+      </svg>
+      <div class="chip-float" style="left:-130px; top:34px;"><span class="cf-dot" style="background:var(--green)"></span>Tim scored Weekly revenue ✓</div>
+      <div class="chip-float" style="left:-150px; top:196px; animation-delay:3.5s;"><span class="cf-dot" style="background:var(--lime)"></span>💬 #sales — 3 new messages</div>
+      <div class="chip-float" style="left:-60px; top:360px; animation-delay:7s;"><span class="cf-dot" style="background:var(--amber)"></span>Rock updated · 48/80 on track</div>
 
     <div class="mock">
       <div class="mock-week">THIS WEEK</div>
@@ -486,6 +526,7 @@
       </div>
       <div class="mock-hint"><span class="blink"></span>Try it — click a status pill to score the week</div>
     </div>
+    </div><!-- /hero-visual -->
   </div>
 </header>
 
@@ -904,6 +945,26 @@
     recount();
   });
   recount();
+
+  /* ── Hero: rotating emotional line ── */
+  const LINES = [
+    'Stop firefighting. Stop chasing follow-ups. Grow by design, not by default.',
+    'Still the one holding it all together? You were meant to lead it, not carry it.',
+    'Your effort deserves traction — not another week of keeping things running.',
+    'One workspace. One language. One rhythm the whole company can feel.'
+  ];
+  const rotEl = document.getElementById('heroRotate');
+  if (rotEl && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let li = 0;
+    setInterval(() => {
+      rotEl.style.opacity = 0;
+      setTimeout(() => {
+        li = (li + 1) % LINES.length;
+        rotEl.textContent = LINES[li];
+        rotEl.style.opacity = 1;
+      }, 360);
+    }, 4200);
+  }
 })();
 </script>
 
