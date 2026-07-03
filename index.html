@@ -1045,6 +1045,18 @@
   </div>
 </section>
 
+<!-- ═══ MID-PAGE BREAK: NEON TUBES CTA ═══ -->
+<section class="cta-band tubes">
+  <canvas id="tubesCanvas" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="mono eyebrow" style="justify-content:center;">Ready when you are</div>
+    <h2>See the numbers. Spot what's missing.<br>Walk into the review knowing where attention belongs.</h2>
+    <p class="section-sub" style="text-align:center;">That's the whole promise. One workspace, one language, one rhythm.</p>
+    <a class="btn" style="font-size:15px; padding: 13px 30px;" href="https://app.workflowmm.net" target="_blank" rel="noopener">Open WorkFlow →</a>
+    <div class="tubes-hint" id="tubesHint" hidden>Move your cursor · click anywhere to shuffle the lights</div>
+  </div>
+</section>
+
 <!-- ═══ RHYTHM ═══ -->
 <section id="rhythm">
   <div class="wrap">
@@ -1111,15 +1123,13 @@
   </div>
 </section>
 
-<!-- ═══ CTA: NEON TUBES FINALE ═══ -->
-<section class="cta-band tubes">
-  <canvas id="tubesCanvas" aria-hidden="true"></canvas>
+<!-- ═══ CLOSING CTA ═══ -->
+<section class="cta-band">
   <div class="wrap">
     <div class="mono eyebrow" style="justify-content:center;">Ready when you are</div>
-    <h2>See the numbers. Spot what's missing.<br>Walk into the review knowing where attention belongs.</h2>
-    <p class="section-sub" style="text-align:center;">That's the whole promise. One workspace, one language, one rhythm.</p>
+    <h2>One workspace. One language.<br>One rhythm.</h2>
+    <p class="section-sub" style="text-align:center;">Give your effort a structure that turns it into traction.</p>
     <a class="btn" style="font-size:15px; padding: 13px 30px;" href="https://app.workflowmm.net" target="_blank" rel="noopener">Open WorkFlow →</a>
-    <div class="tubes-hint" id="tubesHint" hidden>Move your cursor · click anywhere to shuffle the lights</div>
   </div>
 </section>
 
@@ -1201,10 +1211,12 @@
       scrollTrigger: { trigger: '.vocab-table', start: 'top 82%', once: true }
     });
 
-    /* ── Closing CTA ── */
-    gsap.from('.cta-band .wrap', {
-      scale: 0.94, opacity: 0, duration: 0.9, ease: 'power3.out',
-      scrollTrigger: { trigger: '.cta-band', start: 'top 82%', once: true }
+    /* ── CTA bands (tubes mid-page + plain closer), each on its own trigger ── */
+    gsap.utils.toArray('.cta-band').forEach(band => {
+      gsap.from(band.querySelector('.wrap'), {
+        scale: 0.94, opacity: 0, duration: 0.9, ease: 'power3.out',
+        scrollTrigger: { trigger: band, start: 'top 82%', once: true }
+      });
     });
 
     /* ── Container scroll: device tilts flat as it enters (Aceternity-style) ── */
