@@ -460,6 +460,63 @@
     .cs-thead, .cs-row { grid-template-columns: 1.4fr .6fr repeat(4, .55fr); padding: 8px 10px; gap: 5px; }
   }
 
+  /* ── Cascade carousel: chip rail + springy card deck ── */
+  .cascade-carousel {
+    display: grid; grid-template-columns: 40% 1fr; min-height: 460px;
+    border-radius: 28px; overflow: hidden; border: 1px solid rgba(255,255,255,.09);
+  }
+  .cc-left { position: relative; background: var(--lime); overflow: hidden; padding: 40px 34px; }
+  .cc-fade { position: absolute; left: 0; right: 0; height: 70px; z-index: 4; pointer-events: none; }
+  .cc-fade.top { top: 0; background: linear-gradient(#b5e848, rgba(181,232,72,0)); }
+  .cc-fade.bottom { bottom: 0; background: linear-gradient(rgba(181,232,72,0), #b5e848); }
+  .cc-chips { position: relative; width: 100%; height: 100%; }
+  .cc-chip {
+    position: absolute; left: 0; top: 50%; margin-top: -23px;
+    display: flex; align-items: center; gap: 10px; padding: 13px 22px;
+    border-radius: 999px; border: 1px solid rgba(35,41,16,.28); background: transparent;
+    color: rgba(35,41,16,.6); font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+    cursor: pointer; white-space: nowrap;
+    transition: transform .65s cubic-bezier(.3,1.2,.35,1), opacity .5s ease, background .4s, color .4s, border-color .4s;
+  }
+  .cc-chip:hover { border-color: rgba(35,41,16,.6); color: #20241c; }
+  .cc-chip.active { background: #20241c; color: var(--lime); border-color: #20241c; z-index: 3; }
+  .cc-right {
+    position: relative; background: #191c15;
+    display: flex; align-items: center; justify-content: center; padding: 44px 40px;
+    border-left: 1px solid rgba(255,255,255,.06);
+  }
+  .cc-deck { position: relative; width: 100%; max-width: 430px; height: 370px; }
+  .cc-card {
+    position: absolute; inset: 0; border-radius: 24px; overflow: hidden;
+    background: linear-gradient(168deg, #2d3323, #1d2118);
+    border: 1px solid rgba(255,255,255,.09); padding: 28px 30px;
+    display: flex; flex-direction: column;
+    opacity: 0; transform: scale(.7); z-index: 0; pointer-events: none;
+    transition: transform .7s cubic-bezier(.32,1.25,.38,1), opacity .5s ease;
+  }
+  .cc-card.active { opacity: 1; transform: none; z-index: 20; pointer-events: auto; }
+  .cc-card.prev { opacity: .32; transform: translateX(-90px) scale(.85) rotate(-3deg); z-index: 10; }
+  .cc-card.next { opacity: .32; transform: translateX(90px) scale(.85) rotate(3deg); z-index: 10; }
+  .cc-live { display: flex; align-items: center; gap: 9px; font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; letter-spacing: 2.6px; text-transform: uppercase; color: rgba(238,242,228,.55); }
+  .cc-live .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--acc); box-shadow: 0 0 10px var(--acc); animation: pulse 1.8s infinite; }
+  .cc-num { position: absolute; top: 2px; right: 18px; font-size: 100px; font-weight: 800; letter-spacing: -5px; color: var(--acc); opacity: .14; line-height: 1; }
+  .cc-quote { margin: auto 0; font-size: 24px; font-weight: 700; letter-spacing: -0.6px; line-height: 1.35; color: #fff; }
+  .cc-quote b { color: var(--acc); font-weight: 700; }
+  .cc-pill { display: inline-block; background: #f6f6f2; color: #20241c; font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 6px 14px; border-radius: 999px; margin-bottom: 10px; }
+  .cc-cap p { font-size: 13.5px; color: #b9beac; line-height: 1.6; }
+  .cc-card.active .cc-cap { animation: capIn .55s cubic-bezier(.3,1,.4,1) both .18s; }
+  @keyframes capIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  .casc-notes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 16px; }
+  @media (max-width: 900px) {
+    .cascade-carousel { grid-template-columns: 1fr; }
+    .cc-left { min-height: 300px; padding: 30px 22px; }
+    .cc-right { padding: 30px 20px; }
+    .cc-deck { height: 340px; }
+    .cc-card.prev, .cc-card.next { opacity: 0; }
+    .casc-notes { grid-template-columns: 1fr; }
+  }
+
   /* ── Features as a pure-CSS 3D carousel (desktop) ── */
   .carousel-hint { display: none; }
   @media (min-width: 901px) {
@@ -505,6 +562,8 @@
     .reveal, .hero .eyebrow, .hero h1, .hero .hero-sub, .hero .hero-ctas, .hero .mock, .hero-badge, .hero-proof { animation: none; transition: none; opacity: 1; transform: none; }
     .flow-svg, .chip-float { display: none; }
     .marquee-track { animation: none; }
+    .cc-chip, .cc-card { transition: none; }
+    .cc-card.active .cc-cap { animation: none; }
     .feat-carousel { height: auto; perspective: none; }
     .feat-carousel .feat-grid { position: static; width: auto; height: auto; margin: 0; display: grid; animation: none; transform: none; }
     .feat-carousel .feat { position: static; transform: none; }
@@ -776,54 +835,70 @@
       <strong style="color:#d7ddc8;">HQ sets it, the unit owns it, the department measures it, the individual does it.</strong>
     </p>
 
-    <div class="casc-grid">
-      <div class="casc-steps">
-        <div class="casc-step reveal">
-          <div class="casc-rail"><span class="casc-dot"></span><span class="casc-line"></span></div>
-          <div class="casc-body">
-            <div class="casc-level">Company / HQ</div>
-            <div class="casc-name">Company Rock</div>
-            <div class="casc-desc"><em>"Grow enrollment 40% this quarter."</em> Set at HQ. The company command view watches unit health, off-track Rocks and red Scorecards across every unit.</div>
-          </div>
-        </div>
-        <div class="casc-step reveal">
-          <div class="casc-rail"><span class="casc-dot"></span><span class="casc-line"></span></div>
-          <div class="casc-body">
-            <div class="casc-level">Branch / Business Unit</div>
-            <div class="casc-name">Unit Rock</div>
-            <div class="casc-desc"><em>"Yangon campus: add 80 new students."</em> Each unit gets its own workspace — Dashboard, Scoreboard, Rocks, Issues, Projects, Meetings, Members.</div>
-          </div>
-        </div>
-        <div class="casc-step reveal">
-          <div class="casc-rail"><span class="casc-dot"></span><span class="casc-line"></span></div>
-          <div class="casc-body">
-            <div class="casc-level">Department</div>
-            <div class="casc-name">Measurable Goal</div>
-            <div class="casc-desc"><em>"Book 120 consultations, convert 80."</em> Departments group members, own Scorecards, and make the Rock a number someone can hit.</div>
-          </div>
-        </div>
-        <div class="casc-step reveal">
-          <div class="casc-rail"><span class="casc-dot"></span></div>
-          <div class="casc-body">
-            <div class="casc-level">Individual</div>
-            <div class="casc-name">My Work — today</div>
-            <div class="casc-desc"><em>"Call 15 leads. Update my Scorecard. Close 2 tasks."</em> The level where strategy finally becomes daily action — in one personal queue.</div>
-          </div>
+    <div class="cascade-carousel reveal" id="cascadeCarousel">
+      <div class="cc-left">
+        <div class="cc-fade top"></div>
+        <div class="cc-fade bottom"></div>
+        <div class="cc-chips">
+          <button class="cc-chip" data-cc="0">🏢 01 · Company / HQ</button>
+          <button class="cc-chip" data-cc="1">🏬 02 · Business Unit</button>
+          <button class="cc-chip" data-cc="2">🎯 03 · Department</button>
+          <button class="cc-chip" data-cc="3">✅ 04 · Individual</button>
         </div>
       </div>
+      <div class="cc-right">
+        <div class="cc-deck">
+          <article class="cc-card" style="--acc:#b5e848">
+            <div class="cc-live"><span class="dot"></span>Cascade · Level 1</div>
+            <div class="cc-num">01</div>
+            <div class="cc-quote">"Grow enrollment <b>40%</b> this quarter."</div>
+            <div class="cc-cap">
+              <span class="cc-pill">1 · Company Rock</span>
+              <p>Set at HQ. The command view watches unit health, off-track Rocks and red Scorecards across every unit.</p>
+            </div>
+          </article>
+          <article class="cc-card" style="--acc:#34d399">
+            <div class="cc-live"><span class="dot"></span>Cascade · Level 2</div>
+            <div class="cc-num">02</div>
+            <div class="cc-quote">"Yangon campus: add <b>80 new students</b>."</div>
+            <div class="cc-cap">
+              <span class="cc-pill">2 · Unit Rock</span>
+              <p>Each unit gets its own workspace — Dashboard, Scoreboard, Rocks, Issues, Projects, Meetings, Members.</p>
+            </div>
+          </article>
+          <article class="cc-card" style="--acc:#fbbf24">
+            <div class="cc-live"><span class="dot"></span>Cascade · Level 3</div>
+            <div class="cc-num">03</div>
+            <div class="cc-quote">"Book <b>120 consultations</b>, convert <b>80</b>."</div>
+            <div class="cc-cap">
+              <span class="cc-pill">3 · Department Goal</span>
+              <p>Departments group members, own Scorecards, and make the Rock a number someone can hit.</p>
+            </div>
+          </article>
+          <article class="cc-card" style="--acc:#fb8672">
+            <div class="cc-live"><span class="dot"></span>Cascade · Level 4</div>
+            <div class="cc-num">04</div>
+            <div class="cc-quote">"Call <b>15 leads</b>. Update my Scorecard. Close <b>2 tasks</b>."</div>
+            <div class="cc-cap">
+              <span class="cc-pill">4 · My Work — Today</span>
+              <p>The level where strategy finally becomes daily action — in one personal queue.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
 
-      <div class="casc-aside">
-        <div class="casc-note reveal">
-          <h4><span class="dir">↓</span> Cascade down</h4>
-          <p>Purpose becomes a goal, the goal becomes Rocks, Rocks become projects and tasks. Each level makes the one above it concrete — nothing is vague by the time it reaches a person.</p>
-        </div>
-        <div class="casc-note reveal">
-          <h4><span class="dir">↑</span> Roll up</h4>
-          <p>Tasks complete projects. Projects complete Rocks. Unit results roll into company health — and the HQ command view shows the top of the stack, live, without anyone writing a report.</p>
-        </div>
-        <div class="casc-rule reveal">
-          Make work visible at the right level. Keep ownership explicit. Move every conversation toward action.
-        </div>
+    <div class="casc-notes">
+      <div class="casc-note reveal">
+        <h4><span class="dir">↓</span> Cascade down</h4>
+        <p>Purpose becomes a goal, the goal becomes Rocks, Rocks become projects and tasks. Each level makes the one above it concrete — nothing is vague by the time it reaches a person.</p>
+      </div>
+      <div class="casc-note reveal">
+        <h4><span class="dir">↑</span> Roll up</h4>
+        <p>Tasks complete projects. Projects complete Rocks. Unit results roll into company health — and the HQ command view shows the top of the stack, live, without anyone writing a report.</p>
+      </div>
+      <div class="casc-rule reveal">
+        Make work visible at the right level. Keep ownership explicit. Move every conversation toward action.
       </div>
     </div>
   </div>
@@ -1056,20 +1131,6 @@
       onEnter: batch => gsap.to(batch, { opacity: 1, y: 0, duration: 0.75, stagger: 0.09, ease: 'power3.out', overwrite: true })
     });
 
-    /* ── Cascade: the line draws itself, dots pop ── */
-    gsap.utils.toArray('.casc-line').forEach(line => {
-      gsap.from(line, {
-        scaleY: 0, transformOrigin: 'top center', duration: 0.9, ease: 'power2.inOut',
-        scrollTrigger: { trigger: line.parentElement, start: 'top 78%', once: true }
-      });
-    });
-    gsap.utils.toArray('.casc-dot').forEach(dot => {
-      gsap.from(dot, {
-        scale: 0, duration: 0.5, ease: 'back.out(2.5)',
-        scrollTrigger: { trigger: dot, start: 'top 82%', once: true }
-      });
-    });
-
     /* ── Meeting card: agenda cascades in, IDS chips pop ── */
     gsap.from('.agenda', {
       x: -24, opacity: 0, stagger: 0.09, duration: 0.5, ease: 'power2.out',
@@ -1249,6 +1310,42 @@
     recount();
   });
   recount();
+
+  /* ── Cascade carousel: chip rail + card deck ── */
+  const ccWrap = document.getElementById('cascadeCarousel');
+  if (ccWrap) {
+    const ccChips = [...ccWrap.querySelectorAll('.cc-chip')];
+    const ccCards = [...ccWrap.querySelectorAll('.cc-card')];
+    const ccLen = ccCards.length;
+    let ccIdx = 0, ccPaused = false;
+
+    const ccWrapD = (d) => { let n = d; if (n > ccLen / 2) n -= ccLen; if (n < -ccLen / 2) n += ccLen; return n; };
+
+    const ccRender = () => {
+      ccChips.forEach((chip, i) => {
+        const d = ccWrapD(i - ccIdx);
+        chip.style.transform = `translateY(${d * 64}px)`;
+        chip.style.opacity = String(1 - Math.abs(d) * 0.25);
+        chip.classList.toggle('active', i === ccIdx);
+      });
+      ccCards.forEach((card, i) => {
+        const d = ccWrapD(i - ccIdx);
+        card.classList.toggle('active', d === 0);
+        card.classList.toggle('prev', d === -1);
+        card.classList.toggle('next', d === 1);
+      });
+    };
+
+    ccChips.forEach((chip, i) => chip.addEventListener('click', () => { ccIdx = i; ccRender(); }));
+    ccWrap.addEventListener('mouseenter', () => { ccPaused = true; });
+    ccWrap.addEventListener('mouseleave', () => { ccPaused = false; });
+    if (!reducedMotion) {
+      setInterval(() => {
+        if (!ccPaused && !document.hidden) { ccIdx = (ccIdx + 1) % ccLen; ccRender(); }
+      }, 3200);
+    }
+    ccRender();
+  }
 
   /* ── Hero: rotating emotional line ── */
   const LINES = [
