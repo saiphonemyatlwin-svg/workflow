@@ -460,6 +460,32 @@
     .cs-thead, .cs-row { grid-template-columns: 1.4fr .6fr repeat(4, .55fr); padding: 8px 10px; gap: 5px; }
   }
 
+  /* ── Features as a pure-CSS 3D carousel (desktop) ── */
+  .carousel-hint { display: none; }
+  @media (min-width: 901px) {
+    .feat-carousel { position: relative; height: 480px; perspective: 1500px; }
+    .feat-carousel .feat-grid {
+      position: absolute; left: 50%; top: 50%; width: 300px; height: 370px;
+      margin: -185px 0 0 -150px; display: block;
+      transform-style: preserve-3d;
+      animation: ringSpin 50s linear infinite;
+    }
+    .feat-carousel:hover .feat-grid { animation-play-state: paused; }
+    .feat-carousel .feat {
+      position: absolute; inset: 0; --r: 415px;
+      transform: rotateY(calc(var(--i) * 40deg)) translateZ(var(--r));
+      backface-visibility: hidden; overflow: hidden;
+    }
+    .feat-carousel .feat:hover { transform: rotateY(calc(var(--i) * 40deg)) translateZ(var(--r)); }
+    .carousel-hint {
+      display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 26px;
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600;
+      letter-spacing: 1.6px; text-transform: uppercase; color: var(--ink-faint);
+    }
+    .carousel-hint .blink { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); animation: pulse 1.6s infinite; }
+  }
+  @keyframes ringSpin { to { transform: rotateY(-360deg); } }
+
   /* ── Marquee: the operating language on loop ── */
   .marquee { overflow: hidden; background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 16px 0; }
   .marquee-track { display: flex; width: max-content; animation: marquee 30s linear infinite; }
@@ -479,6 +505,10 @@
     .reveal, .hero .eyebrow, .hero h1, .hero .hero-sub, .hero .hero-ctas, .hero .mock, .hero-badge, .hero-proof { animation: none; transition: none; opacity: 1; transform: none; }
     .flow-svg, .chip-float { display: none; }
     .marquee-track { animation: none; }
+    .feat-carousel { height: auto; perspective: none; }
+    .feat-carousel .feat-grid { position: static; width: auto; height: auto; margin: 0; display: grid; animation: none; transform: none; }
+    .feat-carousel .feat { position: static; transform: none; }
+    .carousel-hint { display: none; }
     html { scroll-behavior: auto; }
   }
 
@@ -808,62 +838,65 @@
       Nine surfaces that share the same facts. Update a number once and it changes what the member sees,
       what the meeting reviews, and what leadership worries about.
     </p>
+    <div class="feat-carousel">
     <div class="feat-grid">
-      <div class="feat reveal">
+      <div class="feat" style="--i:0">
         <div class="feat-ico">🏢</div>
         <h3>Company Hub</h3>
         <p>The HQ command view: unit health cards, branch comparison, off-track Rocks, red Scorecards, overdue work and an executive attention queue.</p>
         <div class="f-for">For leaders</div>
       </div>
-      <div class="feat reveal">
+      <div class="feat" style="--i:1">
         <div class="feat-ico">📊</div>
         <h3>Scoreboard</h3>
         <p>The weekly Scorecard board — owners, targets, status and week-by-week history in one eye path. Numbers first, explanations second.</p>
         <div class="f-for">For the weekly truth</div>
       </div>
-      <div class="feat reveal">
+      <div class="feat" style="--i:2">
         <div class="feat-ico">🪨</div>
         <h3>Rocks</h3>
         <p>Quarterly priorities with owner, status, ship date and linked work. Off-track Rocks surface upward so the next Sync starts with clear attention points.</p>
         <div class="f-for">For the quarter</div>
       </div>
-      <div class="feat reveal">
+      <div class="feat" style="--i:3">
         <div class="feat-ico">✅</div>
         <h3>My Work</h3>
         <p>The member's personal queue: daily tasks, project work, owned Scorecards, owned Rocks and raised issues. Today, overdue, done — filtered your way.</p>
         <div class="f-for">For every member</div>
       </div>
-      <div class="feat reveal">
+      <div class="feat" style="--i:4">
         <div class="feat-ico">👥</div>
         <h3>Team Work</h3>
         <p>A leader's assignment surface for short daily actions — kept separate from projects so small work never pollutes structured execution.</p>
         <div class="f-for">For team leads</div>
       </div>
-      <div class="feat reveal">
+      <div class="feat" style="--i:5">
         <div class="feat-ico">📁</div>
         <h3>Projects</h3>
         <p>The execution hub for planned work across Rocks, issues and weekly work — with views for active, at-risk, needs-update, overdue, mine and done.</p>
         <div class="f-for">For structured execution</div>
       </div>
-      <div class="feat reveal">
+      <div class="feat" style="--i:6">
         <div class="feat-ico">🚩</div>
         <h3>Issues</h3>
         <p>The shared backlog of obstacles, questions, risks and decisions. Anyone can raise and vote; the solve flow records root cause and resolution.</p>
         <div class="f-for">For what's stuck</div>
       </div>
-      <div class="feat reveal">
+      <div class="feat" style="--i:7">
         <div class="feat-ico">🔄</div>
         <h3>WorkFlow Syncs Meeting</h3>
         <p>Start a live meeting, run the guided flow with timers and issue integration, rate it, and keep the full history as the operating record.</p>
         <div class="f-for">For the weekly heartbeat</div>
       </div>
-      <div class="feat reveal">
+      <div class="feat" style="--i:8">
         <div class="feat-ico">💬</div>
         <h3>Channels — chat, built in</h3>
         <p>Slack-style team chat inside WorkFlow. A channel per branch, department or project, with message streams, members and shared files — so conversations stay attached to the work, not scattered across outside apps. Alerts land in one notification hub.</p>
         <div class="f-for">For talking where you work</div>
       </div>
     </div>
+    <div class="carousel-hint"><span class="blink"></span>Hover to pause · nine surfaces, one system</div>
+    </div><!-- /feat-carousel -->
   </div>
 </section>
 
@@ -1070,6 +1103,12 @@
       y: -70, ease: 'none',
       scrollTrigger: { trigger: '.cscroll', start: 'top 60%', end: 'bottom 20%', scrub: true }
     });
+    /* ── Feature carousel enters as one piece ── */
+    gsap.from('.feat-carousel', {
+      opacity: 0, y: 46, duration: 0.9, ease: 'power3.out',
+      scrollTrigger: { trigger: '#features', start: 'top 70%', once: true }
+    });
+
     gsap.from('.cs-tiles .tile', {
       scale: 0.8, opacity: 0, stagger: 0.07, duration: 0.45, ease: 'back.out(1.6)',
       scrollTrigger: { trigger: '.cscroll-card', start: 'top 72%', once: true }
@@ -1092,8 +1131,8 @@
         btn.addEventListener('mouseleave', () => { xTo(0); yTo(0); });
       });
 
-      /* ── 3D tilt on principle & feature cards ── */
-      document.querySelectorAll('.prin, .feat').forEach(card => {
+      /* ── 3D tilt on principle cards (feature cards live in the 3D ring) ── */
+      document.querySelectorAll('.prin').forEach(card => {
         gsap.set(card, { transformPerspective: 700 });
         const rx = gsap.quickTo(card, 'rotationX', { duration: 0.5, ease: 'power2' });
         const ry = gsap.quickTo(card, 'rotationY', { duration: 0.5, ease: 'power2' });
