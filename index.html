@@ -992,7 +992,7 @@
       .from('.hero-ctas', { y: 18, opacity: 0, duration: 0.5 }, '-=0.4')
       .from('.hero-proof', { opacity: 0, duration: 0.5 }, '-=0.3')
       .from('.mock', { x: 70, opacity: 0, rotation: 1.6, duration: 1, ease: 'power4.out' }, 0.3)
-      .from('.tile', { scale: 0.7, opacity: 0, stagger: 0.08, duration: 0.5, ease: 'back.out(1.7)' }, '-=0.6')
+      .from('#tiles .tile', { scale: 0.7, opacity: 0, stagger: 0.08, duration: 0.5, ease: 'back.out(1.7)' }, '-=0.6')
       .from('.mock-row', { x: 26, opacity: 0, stagger: 0.07, duration: 0.45 }, '-=0.35')
       .from('.mock-hint', { opacity: 0, duration: 0.4 }, '-=0.2');
 
@@ -1069,6 +1069,10 @@
     gsap.to('.cscroll-head', {
       y: -70, ease: 'none',
       scrollTrigger: { trigger: '.cscroll', start: 'top 60%', end: 'bottom 20%', scrub: true }
+    });
+    gsap.from('.cs-tiles .tile', {
+      scale: 0.8, opacity: 0, stagger: 0.07, duration: 0.45, ease: 'back.out(1.6)',
+      scrollTrigger: { trigger: '.cscroll-card', start: 'top 72%', once: true }
     });
     gsap.from('.cs-row', {
       opacity: 0, x: -14, stagger: 0.06, duration: 0.4, ease: 'power2.out',
