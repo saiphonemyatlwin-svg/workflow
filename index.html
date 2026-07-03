@@ -172,29 +172,50 @@
   }
 
   /* ── Motion: information flowing into the board ── */
+  .hero { position: relative; }
+  .hero .wrap { position: relative; z-index: 1; }
   .hero-visual { position: relative; }
+  .hero-visual .mock { position: relative; z-index: 3; }
   .flow-svg {
     position: absolute; top: 40px; left: -150px; width: 150px; height: 80%;
     overflow: visible; pointer-events: none; z-index: 0;
   }
-  .flow-svg path { fill: none; stroke: #cddfa8; stroke-width: 1.5; stroke-dasharray: 3 7; opacity: .8; }
+  .flow-svg path {
+    fill: none; stroke: #cddfa8; stroke-width: 1.5; stroke-dasharray: 3 7; opacity: .8;
+    animation: dashFlow 1.4s linear infinite;
+  }
+  @keyframes dashFlow { to { stroke-dashoffset: -10; } }
   .chip-float {
     position: absolute; z-index: 2; display: flex; align-items: center; gap: 7px;
     background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
     padding: 8px 14px; white-space: nowrap;
     font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; letter-spacing: .6px;
     color: var(--ink-mid); box-shadow: 0 10px 26px rgba(30,35,20,0.12);
-    opacity: 0; animation: chipFloat 10.5s ease-in-out infinite;
+    opacity: 0; animation: chipFloat 12s ease-in-out infinite;
   }
   .chip-float .cf-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
   @keyframes chipFloat {
-    0%   { opacity: 0; transform: translateY(20px); }
-    6%   { opacity: 1; transform: translateY(0); }
-    26%  { opacity: 1; transform: translateY(-4px); }
-    33%  { opacity: 0; transform: translateY(-20px); }
-    100% { opacity: 0; transform: translateY(-20px); }
+    0%   { opacity: 0; transform: translate(0, 18px); }
+    5%   { opacity: 1; transform: translate(0, 0); }
+    16%  { opacity: 1; transform: translate(26px, -3px); }
+    22%  { opacity: 0; transform: translate(60px, -6px); }
+    100% { opacity: 0; transform: translate(60px, -6px); }
+  }
+  /* ── Ambient sparks drifting up the hero ── */
+  .sparks { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .sparks span {
+    position: absolute; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--lime); opacity: 0;
+    animation: sparkFloat 7.5s ease-in-out infinite;
+  }
+  @keyframes sparkFloat {
+    0%   { opacity: 0; transform: translateY(16px) scale(.5); }
+    35%  { opacity: .55; }
+    70%  { opacity: .3; }
+    100% { opacity: 0; transform: translateY(-52px) scale(1.05); }
   }
   @media (max-width: 1100px) { .flow-svg, .chip-float { display: none; } }
+  @media (max-width: 900px) { .sparks { display: none; } }
 
   /* Hero app mock */
   .mock {
@@ -560,7 +581,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .reveal, .hero .eyebrow, .hero h1, .hero .hero-sub, .hero .hero-ctas, .hero .mock, .hero-badge, .hero-proof { animation: none; transition: none; opacity: 1; transform: none; }
-    .flow-svg, .chip-float { display: none; }
+    .flow-svg, .chip-float, .sparks { display: none; }
     .marquee-track { animation: none; }
     .cc-chip, .cc-card { transition: none; }
     .cc-card.active .cc-cap { animation: none; }
@@ -624,6 +645,14 @@
 
 <!-- ═══ HERO ═══ -->
 <header class="hero" id="top">
+  <div class="sparks" aria-hidden="true">
+    <span style="left:6%;  top:24%;"></span>
+    <span style="left:14%; top:64%; animation-delay:1.6s; background:#34d399;"></span>
+    <span style="left:30%; top:38%; animation-delay:3.1s; width:4px; height:4px;"></span>
+    <span style="left:42%; top:74%; animation-delay:4.4s;"></span>
+    <span style="left:48%; top:18%; animation-delay:2.2s; background:#fbbf24; width:4px; height:4px;"></span>
+    <span style="left:36%; top:88%; animation-delay:5.7s; background:#34d399;"></span>
+  </div>
   <div class="wrap hero-grid">
     <div>
       <div class="hero-badge">★ The only app built for extraordinary, scaling companies &amp; big teams</div>
@@ -645,15 +674,23 @@
     <div class="hero-visual">
       <svg class="flow-svg" viewBox="0 0 150 460" preserveAspectRatio="none" aria-hidden="true">
         <path d="M0,70 C70,70 85,120 150,130"/>
+        <path d="M0,150 C60,150 85,90 150,72"/>
         <path d="M0,230 C70,230 85,225 150,220"/>
+        <path d="M0,330 C70,330 85,370 150,388"/>
         <path d="M0,395 C75,395 90,320 150,300"/>
         <circle r="4" fill="#34d399"><animateMotion dur="3.6s" repeatCount="indefinite" path="M0,70 C70,70 85,120 150,130"/></circle>
+        <circle r="3" fill="#34d399" opacity=".6"><animateMotion dur="3.6s" begin="1.8s" repeatCount="indefinite" path="M0,70 C70,70 85,120 150,130"/></circle>
+        <circle r="3.5" fill="#7fb832"><animateMotion dur="4.1s" begin="0.5s" repeatCount="indefinite" path="M0,150 C60,150 85,90 150,72"/></circle>
         <circle r="3.5" fill="#b5e848"><animateMotion dur="4.4s" begin="0.9s" repeatCount="indefinite" path="M0,230 C70,230 85,225 150,220"/></circle>
+        <circle r="3" fill="#b5e848" opacity=".6"><animateMotion dur="4.4s" begin="3.1s" repeatCount="indefinite" path="M0,230 C70,230 85,225 150,220"/></circle>
+        <circle r="3.5" fill="#fb8672"><animateMotion dur="4.8s" begin="2.2s" repeatCount="indefinite" path="M0,330 C70,330 85,370 150,388"/></circle>
         <circle r="4" fill="#fbbf24"><animateMotion dur="5s" begin="1.7s" repeatCount="indefinite" path="M0,395 C75,395 90,320 150,300"/></circle>
       </svg>
-      <div class="chip-float" style="left:-130px; top:34px;"><span class="cf-dot" style="background:var(--green)"></span>Tim scored Weekly revenue ✓</div>
-      <div class="chip-float" style="left:-150px; top:196px; animation-delay:3.5s;"><span class="cf-dot" style="background:var(--lime)"></span>💬 #sales — 3 new messages</div>
-      <div class="chip-float" style="left:-60px; top:360px; animation-delay:7s;"><span class="cf-dot" style="background:var(--amber)"></span>Rock updated · 48/80 on track</div>
+      <div class="chip-float" style="left:-130px; top:22px;"><span class="cf-dot" style="background:var(--green)"></span>Tim scored Weekly revenue ✓</div>
+      <div class="chip-float" style="left:-150px; top:120px; animation-delay:2.4s;"><span class="cf-dot" style="background:var(--lime)"></span>💬 #sales — 3 new messages</div>
+      <div class="chip-float" style="left:-90px; top:225px; animation-delay:4.8s;"><span class="cf-dot" style="background:var(--coral)"></span>🚩 Su raised an issue → IDS</div>
+      <div class="chip-float" style="left:-140px; top:330px; animation-delay:7.2s;"><span class="cf-dot" style="background:var(--amber)"></span>Rock updated · 48/80 on track</div>
+      <div class="chip-float" style="left:-70px; top:415px; animation-delay:9.6s;"><span class="cf-dot" style="background:var(--green)"></span>⭐ Sync rated 8.4 / 10</div>
 
     <div class="mock">
       <div class="mock-week">THIS WEEK</div>
