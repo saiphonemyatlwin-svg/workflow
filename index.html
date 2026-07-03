@@ -98,7 +98,7 @@
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; overflow-x: clip; }
   body {
     background: var(--bg); color: var(--ink);
     font-family: 'Inter', -apple-system, sans-serif;
@@ -413,6 +413,64 @@
   .to-top.show { opacity: 1; pointer-events: auto; transform: none; }
   .to-top:hover { transform: translateY(-2px); }
 
+  /* ── Container scroll: 3D device that flattens as you scroll ── */
+  .cscroll { padding: 30px 0 90px; }
+  .cscroll-inner { max-width: 1120px; margin: 0 auto; padding: 0 28px; perspective: 1100px; }
+  .cscroll-head { text-align: center; margin-bottom: 40px; }
+  .cscroll-head .eyebrow { justify-content: center; }
+  .cscroll-head .eyebrow::after { content: ''; width: 22px; height: 2px; background: var(--lime); border-radius: 2px; }
+  .cscroll-card {
+    background: #20241c; border: 4px solid #43483b; border-radius: 30px; padding: 14px;
+    max-width: 1000px; margin: 0 auto; transform-style: preserve-3d; will-change: transform;
+    box-shadow: 0 9px 20px rgba(0,0,0,.29), 0 37px 37px rgba(0,0,0,.26), 0 84px 50px rgba(0,0,0,.15), 0 149px 60px rgba(0,0,0,.04);
+  }
+  .cscroll-screen {
+    background: var(--bg); border-radius: 18px; overflow: hidden;
+    display: grid; grid-template-columns: 190px 1fr; min-height: 520px; text-align: left;
+  }
+  .cs-side { background: var(--surface); border-right: 1px solid var(--border); padding: 18px 12px; }
+  .cs-side .logo { font-size: 15px; margin: 0 6px 16px; }
+  .cs-nav { display: flex; flex-direction: column; gap: 2px; }
+  .cs-nav-item { font-size: 12px; font-weight: 500; color: var(--ink-soft); padding: 7px 10px; border-radius: 8px; display: flex; align-items: center; gap: 8px; }
+  .cs-nav-item.active { background: var(--lime-faint); color: #33430f; font-weight: 600; }
+  .cs-main { padding: 22px 26px; }
+  .cs-main .mono { color: var(--lime-deep); font-size: 9px; margin-bottom: 5px; }
+  .cs-title { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 16px; }
+  .cs-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 18px; }
+  .cs-tiles .tile { padding: 10px 12px 9px; border-radius: 11px; }
+  .cs-tiles .t-num { font-size: 24px; }
+  .cs-tiles .t-dot { width: 16px; height: 16px; top: 9px; right: 9px; }
+  .cs-table { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; font-size: 12px; }
+  .cs-thead, .cs-row { display: grid; grid-template-columns: 1.6fr .7fr repeat(4, .62fr); gap: 8px; align-items: center; padding: 9px 16px; }
+  .cs-thead { font-family: 'JetBrains Mono', monospace; font-size: 8.5px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-faint); border-bottom: 1px solid var(--border); }
+  .cs-thead .wk-now { background: var(--lime-soft); color: #33430f; border-radius: 999px; padding: 2px 8px; text-align: center; }
+  .cs-row { border-bottom: 1px solid var(--border-soft); }
+  .cs-row:last-child { border-bottom: none; }
+  .cs-row .m { font-weight: 600; }
+  .cs-row .o { color: var(--ink-faint); font-size: 11px; }
+  .cs-dept { font-family: 'JetBrains Mono', monospace; font-size: 8.5px; font-weight: 600; letter-spacing: 1.4px; text-transform: uppercase; color: var(--ink-soft); background: var(--bg); padding: 6px 16px; border-bottom: 1px solid var(--border-soft); }
+  .cell { height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 8px; font-weight: 700; letter-spacing: .5px; }
+  .cell.on { background: var(--green-faint); color: var(--green-deep); }
+  .cell.watch { background: var(--amber-faint); color: var(--amber-deep); }
+  .cell.off { background: var(--coral-faint); color: var(--coral-deep); }
+  .cell.miss { background: var(--border-soft); color: var(--ink-faint); }
+  @media (max-width: 800px) {
+    .cscroll-screen { grid-template-columns: 1fr; }
+    .cs-side { display: none; }
+    .cs-thead, .cs-row { grid-template-columns: 1.4fr .6fr repeat(4, .55fr); padding: 8px 10px; gap: 5px; }
+  }
+
+  /* ── Marquee: the operating language on loop ── */
+  .marquee { overflow: hidden; background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 16px 0; }
+  .marquee-track { display: flex; width: max-content; animation: marquee 30s linear infinite; }
+  .marquee-track span {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600;
+    letter-spacing: 3px; text-transform: uppercase; color: var(--ink-faint);
+    padding: 0 34px; white-space: nowrap; display: flex; align-items: center; gap: 34px;
+  }
+  .marquee-track b { color: var(--lime-deep); font-weight: 600; }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+
   /* When GSAP drives the animations, CSS entrance animations step aside */
   .gsap-on .hero .eyebrow, .gsap-on .hero h1, .gsap-on .hero .hero-sub,
   .gsap-on .hero .hero-ctas, .gsap-on .hero .mock, .gsap-on .hero-badge, .gsap-on .hero-proof { animation: none; }
@@ -420,6 +478,7 @@
   @media (prefers-reduced-motion: reduce) {
     .reveal, .hero .eyebrow, .hero h1, .hero .hero-sub, .hero .hero-ctas, .hero .mock, .hero-badge, .hero-proof { animation: none; transition: none; opacity: 1; transform: none; }
     .flow-svg, .chip-float { display: none; }
+    .marquee-track { animation: none; }
     html { scroll-behavior: auto; }
   }
 
@@ -533,6 +592,63 @@
     </div><!-- /hero-visual -->
   </div>
 </header>
+
+<!-- ═══ CONTAINER SCROLL: THE COMMAND VIEW ═══ -->
+<section class="cscroll" id="product" aria-label="Product preview">
+  <div class="cscroll-inner">
+    <div class="cscroll-head">
+      <div class="mono eyebrow">See it in motion</div>
+      <h2>Every branch. Every number.<br>One command view.</h2>
+    </div>
+    <div class="cscroll-card">
+      <div class="cscroll-screen">
+        <aside class="cs-side">
+          <div class="logo"><span class="logo-mark"><span></span><span></span><span></span></span> Workflow</div>
+          <nav class="cs-nav">
+            <span class="cs-nav-item">🏠 HQ Home</span>
+            <span class="cs-nav-item">💚 Company Health</span>
+            <span class="cs-nav-item">✅ My Work</span>
+            <span class="cs-nav-item">👥 Team Work</span>
+            <span class="cs-nav-item active">📊 Company Metrics</span>
+            <span class="cs-nav-item">🪨 Company Rocks</span>
+            <span class="cs-nav-item">📁 Projects</span>
+            <span class="cs-nav-item">🚩 Company Issues</span>
+            <span class="cs-nav-item">🔄 HQ Review Room</span>
+            <span class="cs-nav-item">💬 Channels</span>
+          </nav>
+        </aside>
+        <div class="cs-main">
+          <div class="mono">Weekly Metrics Board</div>
+          <div class="cs-title">Apple metrics</div>
+          <div class="cs-tiles">
+            <div class="tile on"><span class="t-dot"></span><div class="t-label">On Target</div><div class="t-num">9</div></div>
+            <div class="tile watch"><span class="t-dot"></span><div class="t-label">Watch</div><div class="t-num">3</div></div>
+            <div class="tile off"><span class="t-dot"></span><div class="t-label">Off Track</div><div class="t-num">2</div></div>
+            <div class="tile miss"><span class="t-dot"></span><div class="t-label">Missing</div><div class="t-num">2</div></div>
+          </div>
+          <div class="cs-table">
+            <div class="cs-thead"><span>Metric / Target</span><span>Owner</span><span style="text-align:center">Jun 8</span><span style="text-align:center">Jun 15</span><span style="text-align:center">Jun 22</span><span class="wk-now">Jun 29</span></div>
+            <div class="cs-dept">Sale · 3 metrics</div>
+            <div class="cs-row"><span class="m">Weekly revenue</span><span class="o">Tim</span><span class="cell on">36M</span><span class="cell on">38M</span><span class="cell watch">31M</span><span class="cell on">40M</span></div>
+            <div class="cs-row"><span class="m">New orders</span><span class="o">Craig</span><span class="cell watch">19</span><span class="cell on">27</span><span class="cell on">25</span><span class="cell off">14</span></div>
+            <div class="cs-row"><span class="m">Conversion rate</span><span class="o">Lisa</span><span class="cell off">12%</span><span class="cell watch">17%</span><span class="cell on">22%</span><span class="cell miss">—</span></div>
+            <div class="cs-dept">Academic · 2 metrics</div>
+            <div class="cs-row"><span class="m">Teacher attendance</span><span class="o">Eddy</span><span class="cell on">96%</span><span class="cell on">97%</span><span class="cell on">95%</span><span class="cell watch">91%</span></div>
+            <div class="cs-row"><span class="m">Student outcomes</span><span class="o">Mya</span><span class="cell on">+8%</span><span class="cell watch">+4%</span><span class="cell on">+9%</span><span class="cell miss">—</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MARQUEE: THE OPERATING LANGUAGE ═══ -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>Scorecards <b>·</b> Rocks <b>·</b> Issues <b>·</b> Projects <b>·</b> My Work <b>·</b> Team Work <b>·</b> WorkFlow Syncs Meeting <b>·</b> Channels <b>·</b> One workspace <b>·</b> One language <b>·</b> One rhythm <b>·</b></span>
+    <span>Scorecards <b>·</b> Rocks <b>·</b> Issues <b>·</b> Projects <b>·</b> My Work <b>·</b> Team Work <b>·</b> WorkFlow Syncs Meeting <b>·</b> Channels <b>·</b> One workspace <b>·</b> One language <b>·</b> One rhythm <b>·</b></span>
+  </div>
+</div>
 
 <!-- ═══ WHY / PROBLEM ═══ -->
 <section class="problem" id="why">
@@ -942,6 +1058,49 @@
       scale: 0.94, opacity: 0, duration: 0.9, ease: 'power3.out',
       scrollTrigger: { trigger: '.cta-band', start: 'top 82%', once: true }
     });
+
+    /* ── Container scroll: device tilts flat as it enters (Aceternity-style) ── */
+    const mobileView = innerWidth <= 768;
+    gsap.fromTo('.cscroll-card',
+      { rotationX: 20, scale: mobileView ? 0.85 : 1.05, transformOrigin: 'center top' },
+      { rotationX: 0, scale: mobileView ? 0.95 : 1, ease: 'none',
+        scrollTrigger: { trigger: '.cscroll', start: 'top 80%', end: 'center 45%', scrub: 0.5 } }
+    );
+    gsap.to('.cscroll-head', {
+      y: -70, ease: 'none',
+      scrollTrigger: { trigger: '.cscroll', start: 'top 60%', end: 'bottom 20%', scrub: true }
+    });
+    gsap.from('.cs-row', {
+      opacity: 0, x: -14, stagger: 0.06, duration: 0.4, ease: 'power2.out',
+      scrollTrigger: { trigger: '.cs-table', start: 'top 75%', once: true }
+    });
+
+    /* ── Magnetic buttons ── */
+    if (matchMedia('(hover: hover)').matches) {
+      document.querySelectorAll('.btn').forEach(btn => {
+        const xTo = gsap.quickTo(btn, 'x', { duration: 0.4, ease: 'power3' });
+        const yTo = gsap.quickTo(btn, 'y', { duration: 0.4, ease: 'power3' });
+        btn.addEventListener('mousemove', e => {
+          const r = btn.getBoundingClientRect();
+          xTo((e.clientX - r.left - r.width / 2) * 0.25);
+          yTo((e.clientY - r.top - r.height / 2) * 0.35);
+        });
+        btn.addEventListener('mouseleave', () => { xTo(0); yTo(0); });
+      });
+
+      /* ── 3D tilt on principle & feature cards ── */
+      document.querySelectorAll('.prin, .feat').forEach(card => {
+        gsap.set(card, { transformPerspective: 700 });
+        const rx = gsap.quickTo(card, 'rotationX', { duration: 0.5, ease: 'power2' });
+        const ry = gsap.quickTo(card, 'rotationY', { duration: 0.5, ease: 'power2' });
+        card.addEventListener('mousemove', e => {
+          const r = card.getBoundingClientRect();
+          ry(((e.clientX - r.left) / r.width - 0.5) * 8);
+          rx(-((e.clientY - r.top) / r.height - 0.5) * 8);
+        });
+        card.addEventListener('mouseleave', () => { rx(0); ry(0); });
+      });
+    }
 
     /* ── Failsafe: never leave in-view content invisible ── */
     const rescue = () => {
