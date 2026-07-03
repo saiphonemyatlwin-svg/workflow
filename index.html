@@ -378,6 +378,21 @@
   .cta-band { padding: 90px 0; text-align: center; }
   .cta-band h2 { font-size: 44px; }
   .cta-band .section-sub { margin: 0 auto 36px; }
+
+  /* ── Neon tubes finale (interactive Three.js background) ── */
+  .cta-band.tubes { position: relative; background: #14170e; overflow: hidden; padding: 110px 0; }
+  .cta-band.tubes canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  .cta-band.tubes .wrap { position: relative; z-index: 2; pointer-events: none; }
+  .cta-band.tubes h2 { color: #fff; text-shadow: 0 0 36px rgba(181,232,72,.4), 0 2px 18px rgba(0,0,0,.6); }
+  .cta-band.tubes .section-sub { color: rgba(238,242,228,.78); text-shadow: 0 1px 12px rgba(0,0,0,.55); }
+  .cta-band.tubes .eyebrow { color: var(--lime); }
+  .cta-band.tubes .eyebrow::before { background: var(--lime); }
+  .cta-band.tubes .btn { pointer-events: auto; box-shadow: 0 0 30px rgba(181,232,72,.35); }
+  .tubes-hint {
+    margin-top: 30px; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; font-weight: 600;
+    letter-spacing: 2.4px; text-transform: uppercase; color: rgba(238,242,228,.42);
+    animation: pulse 2.6s infinite;
+  }
   footer { border-top: 1px solid var(--border); padding: 28px 0; }
   .foot-inner { display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; color: var(--ink-faint); }
 
@@ -1096,13 +1111,15 @@
   </div>
 </section>
 
-<!-- ═══ CTA ═══ -->
-<section class="cta-band">
+<!-- ═══ CTA: NEON TUBES FINALE ═══ -->
+<section class="cta-band tubes">
+  <canvas id="tubesCanvas" aria-hidden="true"></canvas>
   <div class="wrap">
     <div class="mono eyebrow" style="justify-content:center;">Ready when you are</div>
     <h2>See the numbers. Spot what's missing.<br>Walk into the review knowing where attention belongs.</h2>
     <p class="section-sub" style="text-align:center;">That's the whole promise. One workspace, one language, one rhythm.</p>
     <a class="btn" style="font-size:15px; padding: 13px 30px;" href="https://app.workflowmm.net" target="_blank" rel="noopener">Open WorkFlow →</a>
+    <div class="tubes-hint" id="tubesHint" hidden>Move your cursor · click anywhere to shuffle the lights</div>
   </div>
 </section>
 
@@ -1382,6 +1399,34 @@
       }, 3200);
     }
     ccRender();
+  }
+
+  /* ── Neon tubes finale: lazy-loaded Three.js cursor tubes ── */
+  const tubesCanvas = document.getElementById('tubesCanvas');
+  if (tubesCanvas && !reducedMotion && innerWidth > 900 && matchMedia('(hover: hover)').matches) {
+    const initTubes = async () => {
+      try {
+        const mod = await import('https://cdn.jsdelivr.net/npm/threejs-components@0.0.19/build/cursors/tubes1.min.js');
+        const app = mod.default(tubesCanvas, {
+          tubes: {
+            colors: ['#b5e848', '#34d399', '#fbbf24'],
+            lights: { intensity: 200, colors: ['#b5e848', '#34d399', '#fb8672', '#fbbf24'] }
+          }
+        });
+        const hint = document.getElementById('tubesHint');
+        if (hint) hint.hidden = false;
+        const rand = n => Array.from({ length: n }, () =>
+          '#' + Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0'));
+        tubesCanvas.closest('.cta-band').addEventListener('click', (e) => {
+          if (e.target.closest('a')) return;
+          app.tubes.setColors(rand(3));
+          app.tubes.setLightsColors(rand(4));
+        });
+      } catch (err) { /* graceful: the dark band stands on its own */ }
+    };
+    new IntersectionObserver((entries, io) => {
+      entries.forEach(en => { if (en.isIntersecting) { io.disconnect(); initTubes(); } });
+    }, { rootMargin: '500px' }).observe(tubesCanvas);
   }
 
   /* ── Hero: rotating emotional line ── */
